@@ -89,6 +89,10 @@ function App() {
   // consts for the files
   const [records, setRecords] = useState([]);
 
+  // consts for user and file filter
+  const[userfilter, setUserfilter] = useState('');
+  const[filefilter, setFilefilter] = useState('');
+
 
   // Function for logging out
   async function logout(e){
@@ -98,6 +102,9 @@ function App() {
     setLoggedinpassword('');
     setLoggedinaccounttype('');
     setLoggedinorganizationid('');
+    // Resetting filters
+    setUserfilter('');
+    setFilefilter('');
     console.log('Now logged out');
   }
 
@@ -327,6 +334,28 @@ function App() {
     fetchRecords();
   }
 
+
+  // Set the user filter
+  async function setUser(file){
+    console.log(file.file.user.S);
+    setUserfilter(file.file.user.S);
+    setFilefilter('');
+  }
+
+  // Set the file filter
+  async function setFile(file){
+    console.log(file.file.file.S);
+    setFilefilter(file.file.file.S);
+    setUserfilter('');
+  }
+
+  // Clear filters
+  async function clearfilters(){
+    setUserfilter('');
+    setFilefilter('');
+  }
+
+
   return (
     <div className="App">
 
@@ -391,7 +420,9 @@ function App() {
         >LOG OUT</Button>
       </Card>
       <Card>
-        <Badge variation="info" size="large"> User: &nbsp; <b>{loggedinusername}</b> </Badge>
+        <Badge variation="info" size="large"> Username: &nbsp; <b>{loggedinusername}</b> </Badge>
+        &nbsp; &nbsp;
+        <Badge variation="warning" size="large"> Account Type: &nbsp; <b>{loggedinaccounttype}</b> </Badge>
         &nbsp; &nbsp;
         <Badge variation="success" size="large"> Organization ID: &nbsp; <b>{loggedinorganizationid}</b> </Badge>
       </Card>
@@ -403,20 +434,25 @@ function App() {
           <Table highlightOnHover variation="striped">
             <TableHead>
               <TableRow>
+                <TableCell as="th"></TableCell>
                 <TableCell as="th">FILE</TableCell>
                 <TableCell as="th">TIMESTAMP</TableCell>
                 <TableCell as="th">HASH</TableCell>
-                <TableCell as="th">USER</TableCell>
-                <TableCell as="th"></TableCell>
+                <TableCell as="th"> USER </TableCell>
+                <TableCell as="th">
+                  <Button backgroundColor="purple" color="white" onClick={clearfilters}>CLEAR</Button>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
 
-            
-              {records.length > 0 ? (
-                records.map((file) => 
-                <>
+            {records.length > 0 ? (
+              records.map((file) => 
+              <>
               <TableRow>
+                <TableCell>
+                  <Button onDoubleClick={() => setFile({file})}> {file.file.S}</Button>
+                </TableCell>
                 <TableCell>
                   <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
                 </TableCell>
@@ -427,24 +463,68 @@ function App() {
                   {file.hash.S}
                 </TableCell>
                 <TableCell>
-                  {file.user.S}
+                  <Button onDoubleClick={() => setUser({file})}> {file.user.S}</Button>
                 </TableCell>
                 <TableCell>
-                  <Button onDoubleClick={() => deleteFile({file})} >Delete</Button>
+                  <Button onDoubleClick={() => deleteFile({file})}> Delete</Button>
                 </TableCell>
               </TableRow>
+              </>)) : (<></>) }
+              
+              <br/>
+              <br/>
+              <br/>
+              
+              { filefilter != '' ? (<>
+                <Heading level={3}>File: &nbsp; <Badge variation="error" size="large"><b>{filefilter}</b> </Badge></Heading>
+                <br/>
+                {records.length > 0 ? (
+                records.map((file) => 
+                <>
+                  {file.file.S == filefilter ? (<>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell>
+                      <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
+                    </TableCell>
+                    <TableCell>{file.timestamp.S}</TableCell>
+                    <TableCell>{file.hash.S}</TableCell>
+                    <TableCell>{file.user.S}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                  </>) : (<></>)}
                 </>)) : (<></>) }
+              </>):(<></>) }
+
+              { userfilter != '' ? (<>
+                <Heading level={3}>User: &nbsp; <Badge variation="error" size="large"><b>{userfilter}</b> </Badge></Heading>
+                <br/>
+                {records.length > 0 ? (
+                records.map((file) => 
+                <>
+                  {file.user.S == userfilter ? (<>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell>
+                      <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
+                    </TableCell>
+                    <TableCell>{file.timestamp.S}</TableCell>
+                    <TableCell>{file.hash.S}</TableCell>
+                    <TableCell>{file.user.S}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                  </>) : (<></>)}
+                </>)) : (<></>) }
+              </>):(<></>) }
 
             </TableBody>
           </Table>
         </ThemeProvider>
 
       </>) }
-
      
-      
-
-       
+      <br/>
+      <br/>
     </div>
   );
 }

@@ -243,6 +243,22 @@ function App() {
         <Card variation="outlined">
           <div className='login'>
             <Tabs>
+              <TabItem title="Login">
+                <br/>
+                <TextField
+                  label="Username"
+                  onChange={e => setLoginusername(e.target.value)}
+                />
+                <br/>
+                <TextField
+                  label="Password"
+                  onChange={e => setLoginpassword(e.target.value)}
+                />
+                <br/>
+                <ButtonGroup variation="primary">
+                  <Button variation='primary'onClick={e =>login(e)}>LOG IN</Button>
+                </ButtonGroup>
+              </TabItem>
               <TabItem title="Create Account">
                 <br/>
                 <TextField
@@ -267,40 +283,28 @@ function App() {
                   <Button variation='primary' onClick={e =>createUseraccount(e)}>User</Button>
                 </ButtonGroup>
               </TabItem>
-              <TabItem title="Login">
-                <br/>
-                <TextField
-                  label="Username"
-                  onChange={e => setLoginusername(e.target.value)}
-                />
-                <br/>
-                <TextField
-                  label="Password"
-                  onChange={e => setLoginpassword(e.target.value)}
-                />
-                <br/>
-                <ButtonGroup variation="primary">
-                  <Button variation='primary'onClick={e =>login(e)}>LOG IN</Button>
-                </ButtonGroup>
-              </TabItem>
             </Tabs>
           </div>
         </Card>
         <br/>
       </> ) :
       (<>
+
       <Card>
         <Button variation='primary'
         onClick={logout}
         >LOG OUT</Button>
       </Card>
-      </>) }
+      <Card>
+        <Badge variation="info" size="large"> User: &nbsp; <b>{loggedinusername}</b> </Badge>
+        &nbsp; &nbsp;
+        <Badge variation="success" size="large"> Organization ID: &nbsp; <b>{loggedinorganizationid}</b> </Badge>
+      </Card>
+      <br/>
+      <br/>
 
-     
-      
 
-
-       <ThemeProvider theme={theme} colorMode="light">
+      <ThemeProvider theme={theme} colorMode="light">
           <Table highlightOnHover variation="striped">
             <TableHead>
               <TableRow>
@@ -336,6 +340,13 @@ function App() {
             </TableBody>
           </Table>
         </ThemeProvider>
+
+      </>) }
+
+     
+      
+
+       
     </div>
   );
 }

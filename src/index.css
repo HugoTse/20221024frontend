@@ -52,3 +52,10 @@ code {
     transform: rotate(360deg);
   }
 }
+
+.login {
+  margin-left: 10%;
+  max-width: 35%;
+  margin-bottom: 3%;
+  text-align: left;
+}

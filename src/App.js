@@ -81,8 +81,12 @@ function App() {
 
   // consts after logging in
   const[loggedinusername, setLoggedinusername] = useState('');
+  const[loggedinpassword, setLoggedinpassword] = useState('');
   const[loggedinaccounttype, setLoggedinaccounttype] = useState('');
   const[loggedinorganizationid, setLoggedinorganizationid] = useState('');
+
+  // consts for the files
+  const [records, setRecords] = useState([]);
 
 
   // Function for logging out
@@ -91,6 +95,7 @@ function App() {
     setLogged('');
     console.log('Now logged out');
   }
+
 
   // Function for logging in
   async function login(e){
@@ -123,11 +128,15 @@ function App() {
       if(apiResponseJSON.Found == 'True'){
         setLogged(apiResponse.username)
         setLoggedinusername(apiResponseJSON.username);
+        setLoggedinpassword(apiResponseJSON.password);
         setLoggedinorganizationid(apiResponseJSON.organizationid);
         setLoggedinaccounttype(apiResponseJSON.accounttype);
-        console.log('loggedinusername= ' + loggedinusername);
-        console.log('loggedinorganizationid= ' + loggedinorganizationid);
-        console.log('loggedinaccounttype= ' + loggedinaccounttype);
+        console.log('loggedinusername = ' + loggedinusername);
+        console.log('loggedinpassword = ' + loggedinusername);
+        console.log('loggedinorganizationid = ' + loggedinorganizationid);
+        console.log('loggedinaccounttype = ' + loggedinaccounttype);
+        
+        fetchRecords();
       }
       console.log('Now logged in');
     }
@@ -166,6 +175,7 @@ function App() {
       alert("You have created an owner account");
     }
   }
+
 
   // Function for creating an administrator account
   async function createAdministratoraccount(e){
@@ -232,6 +242,58 @@ function App() {
       alert("You have created a new user account");
     }
   }
+
+
+  // Fetch the records in the table
+  async function fetchRecords(){
+    const myHeaders = {
+      "Content-Type": "application/json",
+    }
+    // create a JSON object with parameters for API call and store in a variable
+    var requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    // Instantiate a request url
+    var url = "https://ee5263n71h.execute-api.us-west-1.amazonaws.com/v0/fileread"+"?username="+loggedinusername+"&password="+loggedinpassword;
+    console.log(url);
+    const apiResponse = await fetch(url, requestOptions)
+    // const apiResponse = await fetch('http://api.open-notify.org/astros.json', {headers} )
+    const apiResponseJSON = await apiResponse.json()
+    console.log(apiResponseJSON);
+    // const rs = apiResponseJSON.body
+    // console.log(rs)
+    // setRecords([...rs])
+    setRecords([...apiResponseJSON])
+  }
+  // fetchRecords();
+  // Fetch the records in the table: UseEffect
+  useEffect(() => { 
+    async function fetchRecords(){
+      const myHeaders = {
+        "Content-Type": "application/json",
+      }
+      // create a JSON object with parameters for API call and store in a variable
+      var requestOptions = {
+        method: "PUT",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+      // Instantiate a request url
+      var url = "https://ee5263n71h.execute-api.us-west-1.amazonaws.com/v0/fileread"+"?username="+loggedinusername+"&password="+loggedinpassword;
+      console.log(url);
+      const apiResponse = await fetch(url, requestOptions)
+      // const apiResponse = await fetch('http://api.open-notify.org/astros.json', {headers} )
+      const apiResponseJSON = await apiResponse.json()
+      console.log(apiResponseJSON);
+      // const rs = apiResponseJSON.body
+      // console.log("This is rs: " + rs)
+      // setRecords([...rs])
+      setRecords([...apiResponseJSON])
+    }
+    fetchRecords()
+  }, []);
 
   return (
     <div className="App">
@@ -316,7 +378,9 @@ function App() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* {records.length > 0 ? (
+
+            
+              {records.length > 0 ? (
                 records.map((file) => 
                 <>
               <TableRow>
@@ -336,7 +400,8 @@ function App() {
                   <Button>Delete</Button>
                 </TableCell>
               </TableRow>
-                </>)) : (<></>) } */}
+                </>)) : (<></>) }
+                
             </TableBody>
           </Table>
         </ThemeProvider>

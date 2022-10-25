@@ -68,6 +68,7 @@ const theme: Theme = {
 };
 
 function App() {
+  // const indicating whether user is logged in
   const[logged, setLogged] = useState('');
 
   // consts for creating account
@@ -93,6 +94,10 @@ function App() {
   async function logout(e){
     e.preventDefault();
     setLogged('');
+    setLoggedinusername('');
+    setLoggedinpassword('');
+    setLoggedinaccounttype('');
+    setLoggedinorganizationid('');
     console.log('Now logged out');
   }
 
@@ -135,7 +140,7 @@ function App() {
         console.log('loggedinpassword = ' + loggedinusername);
         console.log('loggedinorganizationid = ' + loggedinorganizationid);
         console.log('loggedinaccounttype = ' + loggedinaccounttype);
-        
+        // Immediately fetch records before losing the variables
         fetchRecords();
       }
       console.log('Now logged in');
@@ -295,10 +300,38 @@ function App() {
     fetchRecords()
   }, []);
 
+
+  // Function for deleting files
+  async function deleteFile(file){
+    console.log(file.file.id.S);
+    // Instantiate a request url
+    var url = "https://ee5263n71h.execute-api.us-west-1.amazonaws.com/v0/filedelete"+"?deletedid="+file.file.id.S;
+    console.log(url);
+    // instantiate a headers object
+    var myHeaders = new Headers();
+    // add content type header to object
+    myHeaders.append("Content-Type", "application/json");
+    // create a JSON object with parameters for API call and store in a variable
+    var requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    // make API call with parameters and use promises to get response
+    await fetch(url, requestOptions)
+      .then((response) => response.text())
+      // .then((result) => alert(JSON.parse(result).body))
+      .catch((error) => console.log("error", error));
+    alert('Successfully deleted file')
+    // Refresh the records
+    fetchRecords();
+  }
+
   return (
     <div className="App">
 
-      <Heading level={1}>Ransomware Defender</Heading>
+      {/* Click the ransomware defender title to fetch records again */}
+      <Heading level={1} onClick={e =>fetchRecords(e)} >Ransomware Defender</Heading>
       <h4><i>"Using processes, people, and technology to keep your files safe"</i></h4>
       
       {logged == '' ? (<>
@@ -397,11 +430,11 @@ function App() {
                   {file.user.S}
                 </TableCell>
                 <TableCell>
-                  <Button>Delete</Button>
+                  <Button onDoubleClick={() => deleteFile({file})} >Delete</Button>
                 </TableCell>
               </TableRow>
                 </>)) : (<></>) }
-                
+
             </TableBody>
           </Table>
         </ThemeProvider>

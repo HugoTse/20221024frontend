@@ -25,6 +25,7 @@ import {
   TextAreaField,
   SelectField,
   SwitchField,
+  SearchField,
   useTheme,
   Divider,
   ToggleButton,
@@ -342,10 +343,24 @@ function App() {
     setFilefilter('');
   }
 
+  // Search user filter
+  async function searchUser(u){
+    console.log(u);
+    setUserfilter(u);
+    setFilefilter('');
+  }
+
   // Set the file filter
   async function setFile(file){
     console.log(file.file.file.S);
     setFilefilter(file.file.file.S);
+    setUserfilter('');
+  }
+
+  // Set the file filter
+  async function searchFile(f){
+    console.log(f);
+    setFilefilter(f);
     setUserfilter('');
   }
 
@@ -429,97 +444,145 @@ function App() {
       <br/>
       <br/>
 
+      { loggedinaccounttype != 'user' ? (<>
+        <SearchField
+          label="Search"
+          placeholder="Search by file name..."
+          onChange={e => searchFile(e.target.value)}
+          // onClick=
+        />
+        <br/>
+        <SearchField
+          label="Search"
+          placeholder="Search by user name..."
+          onChange={e => searchUser(e.target.value)}
+        />
+        <br/>
+      </>) : (<></>)
+      }
+
+      {/* <Table highlightOnHover={true}>
+        <TableHead>
+          <TableRow>
+            <TableCell as="th" colspan="2">
+              Filtered Files
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody> */}
+      
+
+      { filefilter != '' ? (<>
+        <Heading level={3}>File: &nbsp; <Badge variation="error" size="large"><b>{filefilter}</b> </Badge></Heading>
+        <br/>
+        <Table highlightOnHover={true}>
+        <TableHead>
+          <TableRow>
+            <TableCell as="th" colspan="6">
+              Filtered Files
+            </TableCell>
+          </TableRow>
+          </TableHead>
+          <TableBody>
+        {records.length > 0 ? (
+        records.map((file) => 
+        <>
+          {file.file.S == filefilter ? (<>
+          <TableRow>
+            <TableCell></TableCell>
+            <TableCell>
+              <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
+            </TableCell>
+            <TableCell>{file.timestamp.S}</TableCell>
+            <TableCell>{file.hash.S}</TableCell>
+            <TableCell>{file.user.S}</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+          </>) : (<></>)}
+        </>)) : (<></>) }
+        </TableBody>
+      </Table>
+      </>):(<></>) }
+
+      { userfilter != '' ? (<>
+        <Heading level={3}>User: &nbsp; <Badge variation="error" size="large"><b>{userfilter}</b> </Badge></Heading>
+        <br/>
+        <Table highlightOnHover={true}>
+        <TableHead>
+          <TableRow>
+            <TableCell as="th" colspan="6">
+              Filtered Files
+            </TableCell>
+          </TableRow>
+          </TableHead>
+          <TableBody>
+        {records.length > 0 ? (
+        records.map((file) => 
+        <>
+          {file.user.S == userfilter ? (<>
+          <TableRow>
+            <TableCell></TableCell>
+            <TableCell>
+              <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
+            </TableCell>
+            <TableCell>{file.timestamp.S}</TableCell>
+            <TableCell>{file.hash.S}</TableCell>
+            <TableCell>{file.user.S}</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+          </>) : (<></>)}
+        </>)) : (<></>) }
+        </TableBody>
+      </Table>
+      </>):(<></>) }
+      
+      <br/>
+      <br/>
 
       <ThemeProvider theme={theme} colorMode="light">
-          <Table highlightOnHover variation="striped">
-            <TableHead>
-              <TableRow>
-                <TableCell as="th"></TableCell>
-                <TableCell as="th">FILE</TableCell>
-                <TableCell as="th">TIMESTAMP</TableCell>
-                <TableCell as="th">HASH</TableCell>
-                <TableCell as="th"> USER </TableCell>
-                <TableCell as="th">
-                  <Button backgroundColor="purple" color="white" onClick={clearfilters}>CLEAR</Button>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        <Table highlightOnHover variation="striped">
+          <TableHead>
+            <TableRow>
+              <TableCell as="th"></TableCell>
+              <TableCell as="th">FILE</TableCell>
+              <TableCell as="th">TIMESTAMP</TableCell>
+              <TableCell as="th">HASH</TableCell>
+              <TableCell as="th"> USER </TableCell>
+              <TableCell as="th">
+                <Button backgroundColor="purple" color="white" onClick={clearfilters}>CLEAR</Button>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
 
-            {records.length > 0 ? (
-              records.map((file) => 
-              <>
-              <TableRow>
-                <TableCell>
-                  <Button onDoubleClick={() => setFile({file})}> {file.file.S}</Button>
-                </TableCell>
-                <TableCell>
-                  <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
-                </TableCell>
-                <TableCell>
-                  {file.timestamp.S}
-                </TableCell>
-                <TableCell>
-                  {file.hash.S}
-                </TableCell>
-                <TableCell>
-                  <Button onDoubleClick={() => setUser({file})}> {file.user.S}</Button>
-                </TableCell>
-                <TableCell>
-                  <Button onDoubleClick={() => deleteFile({file})}> Delete</Button>
-                </TableCell>
-              </TableRow>
-              </>)) : (<></>) }
-              
-              <br/>
-              <br/>
-              <br/>
-              
-              { filefilter != '' ? (<>
-                <Heading level={3}>File: &nbsp; <Badge variation="error" size="large"><b>{filefilter}</b> </Badge></Heading>
-                <br/>
-                {records.length > 0 ? (
-                records.map((file) => 
-                <>
-                  {file.file.S == filefilter ? (<>
-                  <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell>
-                      <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
-                    </TableCell>
-                    <TableCell>{file.timestamp.S}</TableCell>
-                    <TableCell>{file.hash.S}</TableCell>
-                    <TableCell>{file.user.S}</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                  </>) : (<></>)}
-                </>)) : (<></>) }
-              </>):(<></>) }
+          {records.length > 0 ? (
+            records.map((file) => 
+            <>
+            <TableRow>
+              <TableCell>
+                <Button onDoubleClick={() => setFile({file})}> {file.file.S}</Button>
+              </TableCell>
+              <TableCell>
+                <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
+              </TableCell>
+              <TableCell>
+                {file.timestamp.S}
+              </TableCell>
+              <TableCell>
+                {file.hash.S}
+              </TableCell>
+              <TableCell>
+                <Button onDoubleClick={() => setUser({file})}> {file.user.S}</Button>
+              </TableCell>
+              <TableCell>
+                <Button onDoubleClick={() => deleteFile({file})}> Delete</Button>
+              </TableCell>
+            </TableRow>
+            </>)) : (<></>) }
 
-              { userfilter != '' ? (<>
-                <Heading level={3}>User: &nbsp; <Badge variation="error" size="large"><b>{userfilter}</b> </Badge></Heading>
-                <br/>
-                {records.length > 0 ? (
-                records.map((file) => 
-                <>
-                  {file.user.S == userfilter ? (<>
-                  <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell>
-                      <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
-                    </TableCell>
-                    <TableCell>{file.timestamp.S}</TableCell>
-                    <TableCell>{file.hash.S}</TableCell>
-                    <TableCell>{file.user.S}</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                  </>) : (<></>)}
-                </>)) : (<></>) }
-              </>):(<></>) }
-
-            </TableBody>
-          </Table>
-        </ThemeProvider>
+          </TableBody>
+        </Table>
+      </ThemeProvider>
 
       </>) }
      

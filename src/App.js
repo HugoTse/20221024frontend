@@ -593,7 +593,7 @@ function App() {
 
             </>):(<>
             
-            {file.user.S == loggedinaccounttype ? (<>
+            {file.user.S == loggedinusername ? (<>
               <TableRow>
               <TableCell>
                 <Button onDoubleClick={() => setFile({file})}> {file.file.S}</Button>

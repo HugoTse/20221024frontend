@@ -2,6 +2,7 @@ import '@aws-amplify/ui-react/styles.css';
 
 import {
   withAuthenticator,
+  PasswordField,
   ButtonGroup,
   Button,
   Heading,
@@ -389,8 +390,10 @@ function App() {
                   onChange={e => setLoginusername(e.target.value)}
                 />
                 <br/>
-                <TextField
+                <PasswordField
                   label="Password"
+                  name="password"
+                  size="medium"
                   onChange={e => setLoginpassword(e.target.value)}
                 />
                 <br/>
@@ -398,6 +401,7 @@ function App() {
                   <Button variation='primary'onClick={e =>login(e)}>LOG IN</Button>
                 </ButtonGroup>
               </TabItem>
+
               <TabItem title="Create Account">
                 <br/>
                 <TextField
@@ -405,8 +409,10 @@ function App() {
                   onChange={e => setUsername(e.target.value)}
                 />
                 <br/>
-                <TextField
+                <PasswordField
                   label="Password"
+                  name="password"
+                  size="medium"
                   onChange={e => setPassword(e.target.value)}
                 />
                 <br/>
@@ -533,8 +539,8 @@ function App() {
         <Table highlightOnHover variation="striped">
           <TableHead>
             <TableRow>
-              <TableCell as="th">FILTER</TableCell>
-              <TableCell as="th">FILE</TableCell>
+              <TableCell as="th">FILE FILTER</TableCell>
+              <TableCell as="th">FILE NAME</TableCell>
               <TableCell as="th">UPLOAD TIME</TableCell>
 
               {loggedinaccounttype=='administrator' ? (<>

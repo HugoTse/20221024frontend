@@ -460,16 +460,6 @@ function App() {
         <br/>
       </>) : (<></>)
       }
-
-      {/* <Table highlightOnHover={true}>
-        <TableHead>
-          <TableRow>
-            <TableCell as="th" colspan="2">
-              Filtered Files
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody> */}
       
 
       { filefilter != '' ? (<>
@@ -479,7 +469,7 @@ function App() {
         <TableHead>
           <TableRow>
             <TableCell as="th" colspan="6">
-              Filtered Files
+              Filtered Files [File Creation Time = Earliest Timestamp]
             </TableCell>
           </TableRow>
           </TableHead>
@@ -511,7 +501,7 @@ function App() {
         <TableHead>
           <TableRow>
             <TableCell as="th" colspan="6">
-              Filtered Files
+              Filtered Files [File Creation Time = Earliest Timestamp]
             </TableCell>
           </TableRow>
           </TableHead>
@@ -543,11 +533,18 @@ function App() {
         <Table highlightOnHover variation="striped">
           <TableHead>
             <TableRow>
-              <TableCell as="th"></TableCell>
+              <TableCell as="th">FILTER</TableCell>
               <TableCell as="th">FILE</TableCell>
-              <TableCell as="th">TIMESTAMP</TableCell>
-              <TableCell as="th">HASH</TableCell>
-              <TableCell as="th"> USER </TableCell>
+              <TableCell as="th">UPLOAD TIME</TableCell>
+
+              {loggedinaccounttype=='administrator' ? (<>
+                <TableCell as="th">HASH</TableCell>
+              </>):(<></>)}
+              
+              {loggedinaccounttype!='user' ? (<>
+                <TableCell as="th"> USER </TableCell>
+              </>):(<></>)}
+
               <TableCell as="th">
                 <Button backgroundColor="purple" color="white" onClick={clearfilters}>CLEAR</Button>
               </TableCell>
@@ -558,6 +555,8 @@ function App() {
           {records.length > 0 ? (
             records.map((file) => 
             <>
+
+            {loggedinaccounttype != 'user' ? (<>
             <TableRow>
               <TableCell>
                 <Button onDoubleClick={() => setFile({file})}> {file.file.S}</Button>
@@ -568,16 +567,48 @@ function App() {
               <TableCell>
                 {file.timestamp.S}
               </TableCell>
-              <TableCell>
-                {file.hash.S}
-              </TableCell>
+
+              {loggedinaccounttype=='administrator' ? (<>
+                <TableCell>
+                  {file.hash.S}
+                </TableCell>
+              </>):(<></>)}
+              
               <TableCell>
                 <Button onDoubleClick={() => setUser({file})}> {file.user.S}</Button>
               </TableCell>
+
               <TableCell>
+              {loggedinaccounttype=='administrator' ? (<>
                 <Button onDoubleClick={() => deleteFile({file})}> Delete</Button>
+              </>):(<></>)}
               </TableCell>
             </TableRow>
+
+            </>):(<>
+            
+            {file.user.S == loggedinaccounttype ? (<>
+              <TableRow>
+              <TableCell>
+                <Button onDoubleClick={() => setFile({file})}> {file.file.S}</Button>
+              </TableCell>
+              <TableCell>
+                <a href={'https://20221004a.s3.us-west-1.amazonaws.com/'+file.s3Filename.S}>{file.file.S}</a>
+              </TableCell>
+              <TableCell>
+                {file.timestamp.S}
+              </TableCell>
+              <TableCell>
+                <></>
+              </TableCell>
+              </TableRow>
+            </>):(<></>)}
+            
+            </>)}
+
+            
+
+
             </>)) : (<></>) }
 
           </TableBody>
